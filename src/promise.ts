@@ -135,4 +135,17 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
     public catch<R>(onRejected?: RejectedHandler<R>): PromiseLike<T | R> {
         return this.then(null, onRejected)
     }
+
+    public finally(onFinally?: FinallyHandler): PromiseLike<T> {
+        return this.then(
+            (v: T) => {
+                onFinally && onFinally()
+                return v
+            },
+            (r: any) => {
+                onFinally && onFinally()
+                throw r
+            }
+        )
+    }
 }
