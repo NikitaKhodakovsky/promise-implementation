@@ -12,3 +12,6 @@ export function deferred() {
     return result
 }
 
+export function resolved(value: unknown) {
+    return PromiseImplementation.resolve(value)
+}
