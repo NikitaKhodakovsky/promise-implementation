@@ -149,7 +149,11 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
         )
     }
 
-    public static resolve<T>(value: T | PromiseLike<T>): PromiseImplementation<T> {
+    public static resolve<T>(value?: T | PromiseLike<T>): PromiseImplementation<T> {
         return new PromiseImplementation(res => res(value))
+    }
+
+    public static reject<T = never>(reason?: any): PromiseImplementation<T> {
+        return new PromiseImplementation((_, rej) => rej(reason))
     }
 }

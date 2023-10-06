@@ -15,3 +15,7 @@ export function deferred() {
 export function resolved(value: unknown) {
     return PromiseImplementation.resolve(value)
 }
+
+export function rejected(reason: unknown) {
+    return PromiseImplementation.reject(reason)
+}
