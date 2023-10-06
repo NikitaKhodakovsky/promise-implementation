@@ -131,4 +131,8 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
 
         return promise
     }
+
+    public catch<R>(onRejected?: RejectedHandler<R>): PromiseLike<T | R> {
+        return this.then(null, onRejected)
+    }
 }
