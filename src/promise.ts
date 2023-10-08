@@ -122,7 +122,7 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
         }
     }
 
-    public then<R1 = T, R2 = never>(onFulfilled?: FulfilledHandler<T, R1> | null, onRejected?: RejectedHandler<R2> | null): PromiseLike<R1 | R2> {
+    public then<R1 = T, R2 = never>(onFulfilled?: FulfilledHandler<T, R1> | null, onRejected?: RejectedHandler<R2> | null): PromiseImplementation<R1 | R2> {
         const promise = new PromiseImplementation<R1 | R2>()
 
         this.deferred.push([promise, onFulfilled, onRejected])
@@ -132,11 +132,11 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
         return promise
     }
 
-    public catch<R>(onRejected?: RejectedHandler<R>): PromiseLike<T | R> {
+    public catch<R>(onRejected?: RejectedHandler<R>): PromiseImplementation<T | R> {
         return this.then(null, onRejected)
     }
 
-    public finally(onFinally?: FinallyHandler): PromiseLike<T> {
+    public finally(onFinally?: FinallyHandler): PromiseImplementation<T> {
         return this.then(
             (v: T) => {
                 onFinally && onFinally()
