@@ -13,6 +13,10 @@ enum Status {
     REJECTED
 }
 
+function isThenable(value: any): value is PromiseLike<unknown> {
+    return !!(value && typeof value.then === 'function')
+}
+
 export type Resolve = <T>(value: T | PromiseLike<T>) => any
 export type Reject = (reason: any) => any
 export type Executor = (resolve: Resolve, reject: Reject) => any
@@ -155,5 +159,18 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
 
     public static reject<T = never>(reason?: any): PromiseImplementation<T> {
         return new PromiseImplementation((_, rej) => rej(reason))
+    }
+
+    public static race<T>(values: Iterable<T | PromiseLike<T>>): PromiseImplementation<T> {
+        return new PromiseImplementation((resolve, reject) => {
+            for (const value of values) {
+                if (isThenable(value)) {
+                    value.then(resolve, reject)
+                } else {
+                    resolve(value)
+                    break
+                }
+            }
+        })
     }
 }
