@@ -173,4 +173,30 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
             }
         })
     }
+
+    public static any<T>(values: Iterable<T | PromiseLike<T>>): PromiseImplementation<T> {
+        return new PromiseImplementation((resolve, reject) => {
+            const reasons: any[] = []
+            let rejected = 0
+            let count = 0
+
+            const createHandler = (index: number) => (reason: any) => {
+                reasons[index] = reason
+                ++rejected === count && reject(new AggregateError(reasons))
+            }
+
+            for (const value of values) {
+                if (isThenable(value)) {
+                    value.then(resolve, createHandler(count))
+                } else {
+                    resolve(value)
+                    break
+                }
+
+                count++
+            }
+
+            count === rejected && reject(new AggregateError(reasons))
+        })
+    }
 }
