@@ -3,7 +3,9 @@
 		"start": "npm run build && node ./dist/index",
 		"build": "npx tsc",
 		"dev": "nodemon",
-		"test": "npm run build && npx promises-aplus-tests ./dist/adapter && jest test"
+		"test:aplus": "npm run build && npx promises-aplus-tests ./dist/adapter",
+		"test:static": "npx jest",
+		"test": "npm run test:aplus && npm run test:static"
 	},
 	"devDependencies": {
 		"@types/node": "^18.7.13",
