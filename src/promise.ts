@@ -199,4 +199,24 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
             count === rejected && reject(new AggregateError(reasons))
         })
     }
+
+    public static all<T>(values: Iterable<T | PromiseLike<T>>): PromiseImplementation<T[]> {
+        return new PromiseImplementation((resolve, reject) => {
+            const result: T[] = []
+            let fulfilled = 0
+            let count = 0
+
+            const createHandler = (index: number) => (value: T) => {
+                result[index] = value
+                ++fulfilled === count && resolve(result)
+            }
+
+            for (const value of values) {
+                const promise = isThenable(value) ? value : this.resolve(value)
+                promise.then(createHandler(count++), reject)
+            }
+
+            count === fulfilled && resolve(result)
+        })
+    }
 }
