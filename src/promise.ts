@@ -219,4 +219,32 @@ export class PromiseImplementation<T> implements PromiseLike<T> {
             count === fulfilled && resolve(result)
         })
     }
+
+    public static allSettled<T>(values: Iterable<T | PromiseLike<T>>): PromiseImplementation<PromiseSettledResult<T>[]> {
+        return new PromiseImplementation((resolve) => {
+            const result: PromiseSettledResult<T>[] = []
+            let settled = 0
+            let count = 0
+
+            const createHandler = (index: number, status: PromiseSettledResult<T>['status']) => (value: any) => {
+                if (status === 'fulfilled') {
+                    result[index] = { status, value }
+                } else {
+                    result[index] = { status, reason: value }
+                }
+
+                ++settled === count && resolve(result)
+            }
+
+            for (const value of values) {
+                const promise = isThenable(value) ? value : this.resolve(value)
+
+                promise.then(createHandler(count, 'fulfilled'), createHandler(count, 'rejected'))
+
+                count++
+            }
+
+            settled === count && resolve(result)
+        })
+    }
 }
